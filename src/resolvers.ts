@@ -8,7 +8,7 @@ import {
   ScoreResolvers,
   ProgramType,
   MeetStatus,
-} from './generated/types'; // Generated types from your schema
+} from './generated/resolvers-types'; // Generated types from your schema
 import { Pool } from 'pg';
 
 // Helper function to safely handle database queries
