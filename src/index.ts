@@ -1,7 +1,6 @@
 import { ApolloServer } from '@apollo/server';
-import { Pool } from 'pg';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { resolvers } from './resolvers';
+// import { Pool } from 'pg';
 
 // Define the Enum types
 const programTypes = `#graphql
@@ -29,11 +28,11 @@ const typeDefs = `#graphql
   ${meetStatuses}
 
   type Person {
-    personId: ID!
+    personId: Int!
     clubId: ID
     firstName: String!
     lastName: String!
-    dob: Date
+    dob: String
     city: String
     state: String
     zip: String
@@ -42,7 +41,7 @@ const typeDefs = `#graphql
   }
 
   type Club {
-    clubId: ID!
+    clubId: Int!
     name: String!
     shortName: String
     address1: String
@@ -57,10 +56,10 @@ const typeDefs = `#graphql
   }
 
   type Session {
-    sessionId: ID!
-    sanctionId: ID!
+    sessionId: Int!
+    sanctionId: Int!
     name: String
-    date: Date!
+    date: String!
     time1: String
     time2: String
     time3: String
@@ -78,8 +77,8 @@ const typeDefs = `#graphql
   }
 
   type ResultSet {
-    resultSetId: ID!
-    sessionId: ID!
+    resultSetId: Int!
+    sessionId: Int!
     level: String!
     division: String!
     official: Boolean!
@@ -87,13 +86,13 @@ const typeDefs = `#graphql
   }
 
   type Score {
-    scoreId: ID!
-    personId: ID!
-    clubId: ID!
-    sanctionId: ID!
+    scoreId: Int!
+    personId: Int!
+    clubId: Int!
+    sanctionId: Int!
     eventId: String!
     programId: ProgramType!
-    resultSetId: ID!
+    resultSetId: Int!
     sessionId: String!
     sessionSort: Int
     difficulty: Float
@@ -112,7 +111,7 @@ const typeDefs = `#graphql
     tie: Boolean!
     bibNumber: Int!
     place: String!
-    lastUpdate: DateTime!
+    lastUpdate: String!
     combinedScore: Float
     combinedSessionId1: ID
     combinedSessionId2: ID
@@ -124,10 +123,10 @@ const typeDefs = `#graphql
   }
 
   type Sanction {
-    sanctionId: ID!
+    sanctionId: Int!
     name: String!
-    startDate: Date!
-    endDate: Date!
+    startDate: String!
+    endDate: String!
     address1: String
     address2: String
     city: String!
@@ -160,32 +159,59 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    sanction(sanctionId: ID!): Sanction
+    sanction(sanctionId: Int!): Sanction
     meets: [Sanction!]!
-    meet(sanctionId: ID!): Sanction
+    meet(sanctionId: Int!): Sanction
     meetsByProgram(program: ProgramType!): [Sanction!]!
-    meetsByDateRange(startDate: Date, endDate: Date): [Sanction!]!
+    meetsByDateRange(startDate: String, endDate: String): [Sanction!]!
     pastMeets: [Sanction!]!
-    score(scoreId: ID!): Score
+    score(scoreId: Int!): Score
   }
-// `;
+ `;
 
-// Create a new PostgreSQL pool
-const pool = new Pool({
-  user: 'quorra_postgres',
-  host: '192.168.1.100',
-  database: 'gymnastics',
-  password: 'Five-Worshiper-Wildland8',
-  port: 5432,
-});
+const person = {
+  personId: 2234876,
+  clubId: 24029,
+  firstName: 'Gavin',
+  lastName: 'Peterson',
+  gender: 'Male',
+};
+
+const club = {
+  clubId: 24029,
+  name: 'Sterling Academy of Gymnastics',
+  shortName: 'Sterling Gym',
+  address1: '15 Industrial Drive',
+  city: 'Sterling',
+  state: 'MA',
+  zip: '01564',
+  website: 'http://www.sterlinggym.com',
+  emailAddress: 'meets.sterlinggym@gmail.com',
+  phone: 9784227655,
+  fax: 9784227892,
+};
+
+const resolvers = {
+  Person: person,
+  Club: club,
+};
+
+// // Create a new PostgreSQL pool
+// const pool = new Pool({
+//   user: 'quorra_postgres',
+//   host: '192.168.1.100',
+//   database: 'gymnastics',
+//   password: 'Five-Worshiper-Wildland8',
+//   port: 5432,
+// });
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: () => ({ pool }),
+  // context: () => ({ pool }),
 });
 
-// // Start the server
+// Start the server
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
 });
