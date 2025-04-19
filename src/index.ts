@@ -29,7 +29,7 @@ const typeDefs = `#graphql
 
   type Person {
     personId: Int!
-    clubId: ID
+    clubId: Int
     firstName: String!
     lastName: String!
     dob: String
@@ -159,6 +159,8 @@ const typeDefs = `#graphql
   }
 
   type Query {
+    person(personId: Int!): Person
+    club(clubId: Int!): Club
     sanction(sanctionId: Int!): Sanction
     meets: [Sanction!]!
     meet(sanctionId: Int!): Sanction
@@ -192,8 +194,21 @@ const club = {
 };
 
 const resolvers = {
-  Person: person,
-  Club: club,
+  Query: {
+    person: (parent, args, contextValue, info) => {
+      // 1. Fetch the person data based on args.personId from your data source
+      //    (e.g., database, external API).
+
+      // Example using the 'person' const as a placeholder data source:
+      if (args.personId === person.personId) {
+        return person;
+      } else {
+        // 2. Handle cases where the person is not found
+        //    (e.g., return null, throw an error).
+        return null; // Or throw new Error("Person not found");
+      }
+    },
+  },
 };
 
 // // Create a new PostgreSQL pool
