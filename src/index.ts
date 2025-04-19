@@ -53,6 +53,7 @@ const typeDefs = `#graphql
     email: String
     phone: String
     fax: String
+    gymnasts: [Person]
   }
 
   type Session {
@@ -169,6 +170,10 @@ const typeDefs = `#graphql
     pastMeets: [Sanction!]!
     score(scoreId: Int!): Score
   }
+
+  type Mutation {
+    addGymnastToClub(clubId: Int!, personId: Int!): Club
+  }
  `;
 
 const person = {
@@ -191,6 +196,7 @@ const club = {
   emailAddress: 'meets.sterlinggym@gmail.com',
   phone: 9784227655,
   fax: 9784227892,
+  gymnasts: [],
 };
 
 const resolvers = {
@@ -207,6 +213,36 @@ const resolvers = {
         //    (e.g., return null, throw an error).
         return null; // Or throw new Error("Person not found");
       }
+    },
+    club: (parent, args, contextValue, info) => {
+      if (args.clubId === club.clubId) {
+        return club;
+      } else {
+        return null;
+      }
+    },
+  },
+  Mutation: {
+    addGymnastToClub: (parent, args, contextValue, info) => {
+      // Check if club exists
+      if (args.clubId !== club.clubId) {
+        return null;
+      }
+      // Check if person exists
+      if (args.personId !== person.personId) {
+        return null;
+      }
+      // Check if person exists in club
+      const existingGymnast = club.gymnasts.find(
+        (g) => g.personId === args.personId
+      );
+      if (existingGymnast) {
+        return null;
+      }
+      // Add add gymnast
+      club.gymnasts.push(person);
+
+      return club;
     },
   },
 };
