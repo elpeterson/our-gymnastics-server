@@ -1,6 +1,5 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-// import { Pool } from 'pg';
 
 // Define the Enum types
 const programTypes = `#graphql
@@ -158,94 +157,7 @@ const typeDefs = `#graphql
     clubs: [Club!]!
     scores: [Score!]!
   }
-
-  type Query {
-    person(personId: Int!): Person
-    club(clubId: Int!): Club
-    sanction(sanctionId: Int!): Sanction
-    meets: [Sanction!]!
-    meet(sanctionId: Int!): Sanction
-    meetsByProgram(program: ProgramType!): [Sanction!]!
-    meetsByDateRange(startDate: String, endDate: String): [Sanction!]!
-    pastMeets: [Sanction!]!
-    score(scoreId: Int!): Score
-  }
-
-  type Mutation {
-    addGymnastToClub(clubId: Int!, personId: Int!): Club
-  }
  `;
-
-const person = {
-  personId: 2234876,
-  clubId: 24029,
-  firstName: 'Gavin',
-  lastName: 'Peterson',
-  gender: 'Male',
-};
-
-const club = {
-  clubId: 24029,
-  name: 'Sterling Academy of Gymnastics',
-  shortName: 'Sterling Gym',
-  address1: '15 Industrial Drive',
-  city: 'Sterling',
-  state: 'MA',
-  zip: '01564',
-  website: 'http://www.sterlinggym.com',
-  emailAddress: 'meets.sterlinggym@gmail.com',
-  phone: 9784227655,
-  fax: 9784227892,
-  gymnasts: [],
-};
-
-const resolvers = {
-  Query: {
-    person: (parent, args, contextValue, info) => {
-      // 1. Fetch the person data based on args.personId from your data source
-      //    (e.g., database, external API).
-
-      // Example using the 'person' const as a placeholder data source:
-      if (args.personId === person.personId) {
-        return person;
-      } else {
-        // 2. Handle cases where the person is not found
-        //    (e.g., return null, throw an error).
-        return null; // Or throw new Error("Person not found");
-      }
-    },
-    club: (parent, args, contextValue, info) => {
-      if (args.clubId === club.clubId) {
-        return club;
-      } else {
-        return null;
-      }
-    },
-  },
-  Mutation: {
-    addGymnastToClub: (parent, args, contextValue, info) => {
-      // Check if club exists
-      if (args.clubId !== club.clubId) {
-        return null;
-      }
-      // Check if person exists
-      if (args.personId !== person.personId) {
-        return null;
-      }
-      // Check if person exists in club
-      const existingGymnast = club.gymnasts.find(
-        (g) => g.personId === args.personId
-      );
-      if (existingGymnast) {
-        return null;
-      }
-      // Add add gymnast
-      club.gymnasts.push(person);
-
-      return club;
-    },
-  },
-};
 
 // // Create a new PostgreSQL pool
 // const pool = new Pool({
@@ -258,8 +170,6 @@ const resolvers = {
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
-  // context: () => ({ pool }),
 });
 
 // Start the server
